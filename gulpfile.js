@@ -6,6 +6,11 @@ const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const pug = require('gulp-pug');
 
+const sassOptions = {
+  errLogToConsole: true,
+  outputStyle: 'expanded'
+};
+
 gulp.task('babel', () => {
   gulp.src('src/javascript/main.js')
     .pipe(babel({ // transpile
@@ -18,7 +23,7 @@ gulp.task('babel', () => {
 
 gulp.task('sass', () => {
   gulp.src('src/styles/master.sass')
-    .pipe(sass())
+    .pipe(sass(sassOptions).on('error', sass.logError))
     .pipe(minifyCSS())
     .pipe(gulp.dest('dist/styles'))
     .pipe(browserSync.stream());
