@@ -1,14 +1,15 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
-const minifyCSS = require('gulp-csso');
 const browserSync = require('browser-sync').create();
 const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const pug = require('gulp-pug');
+const autoprefixer = require('gulp-autoprefixer');
+// const sourcemaps = require('gulp-sourcemaps');
 
 const sassOptions = {
   errLogToConsole: true,
-  outputStyle: 'expanded'
+  outputStyle: 'compressed'
 };
 
 gulp.task('babel', () => {
@@ -23,8 +24,10 @@ gulp.task('babel', () => {
 
 gulp.task('sass', () => {
   gulp.src('src/styles/master.sass')
+    // .pipe(sourcemaps.init())
     .pipe(sass(sassOptions).on('error', sass.logError))
-    .pipe(minifyCSS())
+    // .pipe(sourcemaps.write()) // add sourcemaps to the CSS (inline)
+    .pipe(autoprefixer()) // append required vendor prefixes (using default targets)
     .pipe(gulp.dest('dist/styles'))
     .pipe(browserSync.stream());
 });

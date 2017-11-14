@@ -5,5 +5,4 @@
 
 ## Potential Improvements
 - Add clean-up task
-- Vendor-prefixes?
 - Image optimization
