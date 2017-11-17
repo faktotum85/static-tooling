@@ -6,10 +6,12 @@ const uglify = require('gulp-uglify');
 const pug = require('gulp-pug');
 const autoprefixer = require('gulp-autoprefixer');
 const imagemin = require('gulp-imagemin');
+const imageminJpg = require('imagemin-jpeg-recompress');
 const cache = require('gulp-cache'); // for caching image-optimization
 const del = require('del'); // for cleaning out the dist folder
 const runSequence = require('run-sequence').use(gulp); // for ensuring clean:dist has finished
 // const sourcemaps = require('gulp-sourcemaps');
+
 
 const sassOptions = {
   errLogToConsole: true,
@@ -49,7 +51,7 @@ gulp.task('update-views', ['views'], () => {
 
 gulp.task('images', () => {
   return gulp.src('src/images/**/*')
-    .pipe(cache(imagemin())) // caching processed images
+    .pipe(cache(imagemin([imagemin.gifsicle(), imagemin.optipng(), imagemin.svgo(), imageminJpg()]))) // caching processed images
     .pipe(gulp.dest('dist/images'))
 });
 
@@ -72,6 +74,11 @@ gulp.task('watch', ['browserSync'], () => {
 gulp.task('clean:dist', () =>{
   del.sync('dist');
 })
+
+// for clearing the cache
+gulp.task('clear', () =>
+  cache.clearAll()
+);
 
 gulp.task('default', () => {
   runSequence('clean:dist', 'watch')
