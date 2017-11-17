@@ -17,7 +17,7 @@ const sassOptions = {
 };
 
 gulp.task('babel', () => {
-  gulp.src('src/javascript/main.js')
+  return gulp.src('src/javascript/main.js')
     .pipe(babel({ // transpile
       presets: ['env']
     }))
@@ -27,7 +27,7 @@ gulp.task('babel', () => {
 });
 
 gulp.task('sass', () => {
-  gulp.src('src/styles/master.sass')
+  return gulp.src('src/styles/master.sass')
     // .pipe(sourcemaps.init())
     .pipe(sass(sassOptions).on('error', sass.logError))
     // .pipe(sourcemaps.write()) // add sourcemaps to the CSS (inline)
@@ -37,31 +37,35 @@ gulp.task('sass', () => {
 });
 
 gulp.task('views', () => {
-  gulp.src('src/views/pages/*.pug') // compile pug templates in views/pages
+  return gulp.src('src/views/pages/*.pug') // compile pug templates in views/pages
     .pipe(pug())
     .pipe(gulp.dest('dist'));
 });
 
+// reload once views are recompiled
+gulp.task('update-views', ['views'], () => {
+  return browserSync.reload();
+});
+
 gulp.task('images', () => {
-  gulp.src('src/images/**/*')
+  return gulp.src('src/images/**/*')
     .pipe(cache(imagemin())) // caching processed images
     .pipe(gulp.dest('dist/images'))
 });
 
-gulp.task('browserSync', () => {
-  browserSync.init({
+gulp.task('browserSync', ['sass', 'babel', 'views', 'images'], () => {
+  return browserSync.init({
     server: {
       baseDir: 'dist' // server serves up dist directory
     }
   });
 });
 
-gulp.task('watch', ['browserSync', 'sass', 'babel', 'views', 'images'], () => {
+gulp.task('watch', ['browserSync'], () => {
   gulp.watch('src/styles/**/*.sass', ['sass']); // watch sass files and run sass task if they change
   gulp.watch('src/javascript/**/*.js', ['babel']); // watch js files in source and transpile again if they change
-  gulp.watch('src/views/**/*.pug', ['views']); // watch pug files and compile templates on change
+  gulp.watch('src/views/**/*.pug', ['update-views']); // watch pug files and update views on change
   gulp.watch('src/images/**/*', ['images']); // watch images folder and optimize if there is a new one
-  gulp.watch('dist/*.html', browserSync.reload); // reload when html files change
 });
 
 // clean out dist folder
