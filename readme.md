@@ -3,14 +3,12 @@ This is a simple build process for static sites that I set up for myself. It use
 - watch files and inject updates automatically
 - compile pug templates to HTML
 - compile and compress SASS
+- optimize images
 - automatically add vendor prefixes
 - transpile (using Babel) and uglify Javascript
 
 ## Usage
 - Run `npm install` to install dev dependencies
-- Use `npm start` or `gulp watch` to watch files during development.
-- Use `gulp` to create a build in the dist folder
+- Use `npm start` or `gulp` to create a build and watch files during development.
 
-## Potential Improvements
-- Add clean-up task
-- Image optimization
+CAUTION: The dist folder will be wiped each time the gulp task is started to prevent stale files from hanging around.

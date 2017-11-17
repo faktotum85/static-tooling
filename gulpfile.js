@@ -5,6 +5,10 @@ const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const pug = require('gulp-pug');
 const autoprefixer = require('gulp-autoprefixer');
+const imagemin = require('gulp-imagemin');
+const cache = require('gulp-cache'); // for caching image-optimization
+const del = require('del'); // for cleaning out the dist folder
+const runSequence = require('run-sequence').use(gulp); // for ensuring clean:dist has finished
 // const sourcemaps = require('gulp-sourcemaps');
 
 const sassOptions = {
@@ -38,6 +42,12 @@ gulp.task('views', () => {
     .pipe(gulp.dest('dist'));
 });
 
+gulp.task('images', () => {
+  gulp.src('src/images/**/*')
+    .pipe(cache(imagemin())) // caching processed images
+    .pipe(gulp.dest('dist/images'))
+});
+
 gulp.task('browserSync', () => {
   browserSync.init({
     server: {
@@ -46,9 +56,19 @@ gulp.task('browserSync', () => {
   });
 });
 
-gulp.task('watch', ['browserSync', 'sass', 'babel', 'views'], () => {
+gulp.task('watch', ['browserSync', 'sass', 'babel', 'views', 'images'], () => {
   gulp.watch('src/styles/**/*.sass', ['sass']); // watch sass files and run sass task if they change
   gulp.watch('src/javascript/**/*.js', ['babel']); // watch js files in source and transpile again if they change
   gulp.watch('src/views/**/*.pug', ['views']); // watch pug files and compile templates on change
+  gulp.watch('src/images/**/*', ['images']); // watch images folder and optimize if there is a new one
   gulp.watch('dist/*.html', browserSync.reload); // reload when html files change
+});
+
+// clean out dist folder
+gulp.task('clean:dist', () =>{
+  del.sync('dist');
+})
+
+gulp.task('default', () => {
+  runSequence('clean:dist', 'watch')
 });
