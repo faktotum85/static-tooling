@@ -2,7 +2,7 @@
   "name": "static-tooling",
   "version": "1.0.0",
   "scripts": {
-    "start": "gulp watch"
+    "start": "gulp"
   },
   "author": "Simon Weller",
   "devDependencies": {
